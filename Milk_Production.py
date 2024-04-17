@@ -128,48 +128,48 @@ def app():
             last_seq = np.vstack((last_seq[1:], pred[0]))
             last_seq = pd.DataFrame(last_seq)
 
-            # Inverse transform the predictions to get the original scale
-            prednext = scaler.inverse_transform(np.array(preds).reshape(-1, 1))
+        # Inverse transform the predictions to get the original scale
+        prednext = scaler.inverse_transform(np.array(preds).reshape(-1, 1))
 
-            #flatten the array from 2-dim to 1-dim
-            prednext = [item for sublist in prednext for item in sublist]
+        #flatten the array from 2-dim to 1-dim
+        prednext = [item for sublist in prednext for item in sublist]
 
-            # Generate an array of datetime64 objects from January 1976 to December 1976
-            months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
+        # Generate an array of datetime64 objects from January 1976 to December 1976
+        months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
 
-            st.write(f"pednext length {len(prednext)}")
-            st.write(f"month length {len(months)}")
+        st.write(f"prednext length {len(prednext)}")
+        st.write(f"month length {len(months)}")
 
-            # Create a Pandas DataFrame with the datetime and values columns
-            nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
+        # Create a Pandas DataFrame with the datetime and values columns
+        nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
 
-            time_axis = np.linspace(0, data.shape[0]-1, 12)
-            time_axis = np.array([int(i) for i in time_axis])
-            time_axisLabels = np.array(data.index, dtype='datetime64[D]')
+        time_axis = np.linspace(0, data.shape[0]-1, 12)
+        time_axis = np.array([int(i) for i in time_axis])
+        time_axisLabels = np.array(data.index, dtype='datetime64[D]')
 
-            fig = plt.figure()
-            ax = fig.add_axes([0, 0, 2.1, 2])
-            ax.set_title('Comparison of Actual and Predicted Data')
-            ax.plot(data.iloc[:,1].values, label='Original Dataset')
-            ax.plot(list(predvalues[0]), color='red', label='Test Predictions')
-            ax.set_xticks(time_axis)
-            ax.set_xticklabels(time_axisLabels[time_axis], rotation=45)
-            ax.set_xlabel('\nTime', fontsize=20, fontweight='bold')
-            ax.set_ylabel('Mik Production', fontsize=20, fontweight='bold')
-            ax.legend(loc='best', prop={'size':20})
-            ax.tick_params(size=10, labelsize=15)
+        fig = plt.figure()
+        ax = fig.add_axes([0, 0, 2.1, 2])
+        ax.set_title('Comparison of Actual and Predicted Data')
+        ax.plot(data.iloc[:,1].values, label='Original Dataset')
+        ax.plot(list(predvalues[0]), color='red', label='Test Predictions')
+        ax.set_xticks(time_axis)
+        ax.set_xticklabels(time_axisLabels[time_axis], rotation=45)
+        ax.set_xlabel('\nTime', fontsize=20, fontweight='bold')
+        ax.set_ylabel('Mik Production', fontsize=20, fontweight='bold')
+        ax.legend(loc='best', prop={'size':20})
+        ax.tick_params(size=10, labelsize=15)
 
 
-            ax1 = fig.add_axes([2.3, 1.3, 1, 0.7])
-            ax1.set_title('Projected Milk Production for 1976')
-            ax1.plot(nextyear['Milk Production'], color='red', label='predicted next year')
-            ax1.set_xticklabels(np.array(nextyear['Month'], dtype='datetime64[D]'), rotation=45)
-            ax1.set_xlabel('Month', fontsize=20, fontweight='bold')
-            ax1.set_ylabel('Milk Production', fontsize=20, fontweight='bold')
-            ax1.tick_params(size=10, labelsize=15)
-            st.pyplot(fig)  
+        ax1 = fig.add_axes([2.3, 1.3, 1, 0.7])
+        ax1.set_title('Projected Milk Production for 1976')
+        ax1.plot(nextyear['Milk Production'], color='red', label='predicted next year')
+        ax1.set_xticklabels(np.array(nextyear['Month'], dtype='datetime64[D]'), rotation=45)
+        ax1.set_xlabel('Month', fontsize=20, fontweight='bold')
+        ax1.set_ylabel('Milk Production', fontsize=20, fontweight='bold')
+        ax1.tick_params(size=10, labelsize=15)
+        st.pyplot(fig)  
 
-            st.write(nextyear)
+        st.write(nextyear)
 
 if __name__ == '__main__':
     app()   
