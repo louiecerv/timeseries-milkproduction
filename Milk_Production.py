@@ -6,6 +6,9 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 
+if "data_norm" not in st.session_state:
+    st.session_state.data_norm = None
+
 def app():
     st.title('Time Series Analysis')
 
@@ -37,6 +40,7 @@ def app():
     scaler = MinMaxScaler(feature_range=(0, 1))
     data_norm = scaler.fit_transform(df.iloc[:,1].values.reshape(-1, 1))
     data_norm = pd.DataFrame(data_norm)
+    st.session_state.data_norm = data_norm
 
     # Split the data into training and testing sets
     train_size = int(len(data_norm) * 0.8)
@@ -63,7 +67,6 @@ def app():
 
     model.compile(optimizer='adam', loss='mean_squared_error')
     
-
     if st.button("Start Training"):
         # Train the model
         history = model.fit(x_train, y_train, epochs=200, batch_size=64, validation_data=(x_test, y_test))
@@ -75,8 +78,9 @@ def app():
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Test'], loc='upper left')
-        plt.show()
+        st.pyplot(fig)
 
+    if st.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
         y_pred_train = model.predict(x_train)
         y_pred_test = model.predict(x_test)
@@ -84,11 +88,12 @@ def app():
         test_rmse = np.sqrt(mean_squared_error(y_test, y_pred_test))
         train_mae = mean_absolute_error(y_train, y_pred_train)
         test_mae = mean_absolute_error(y_test, y_pred_test)
-        print('Train RMSE:', train_rmse)
-        print('Test RMSE:', test_rmse)
-        print('Train MAE:', train_mae)
-        print('Test MAE:', test_mae)
+        st.write('Train RMSE:', train_rmse)
+        st.write('Test RMSE:', test_rmse)
+        st.write('Train MAE:', train_mae)
+        st.write('Test MAE:', test_mae)
 
+        data_norm = st.session_state.data_norm
         # Get predicted data from the model using the normalized values
         predictions = model.predict(data_norm)
 
