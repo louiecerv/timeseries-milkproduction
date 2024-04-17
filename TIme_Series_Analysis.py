@@ -57,7 +57,7 @@ def app():
     tf.keras.layers.LSTM(units=128, input_shape=(window_size, 1)),
     tf.keras.layers.Dense(units=1)
 ])
-    model.summary()
+    st.write(model.summary())
 
     # Compile the model
     model.compile(optimizer='adam', loss='mse')
@@ -79,7 +79,7 @@ def app():
     ax.legend()  # Legend placement can be adjusted with optional arguments
 
     # Display the plot
-    st.pyplot
+    st.pyplot*fig)
 
 
 
