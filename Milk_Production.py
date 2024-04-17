@@ -136,21 +136,20 @@ def app():
 
         # Generate an array of datetime64 objects from January 1976 to December 1976
         months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
-
-        st.write(f"prednext length {len(prednext)}")
-        st.write(f"month length {len(months)}")
-
+        
         # Create a Pandas DataFrame with the datetime and values columns
         nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
 
-        time_axis = np.linspace(0, data.shape[0]-1, 12)
+        st.write(nextyear)
+
+        time_axis = np.linspace(0, df.shape[0]-1, 12)
         time_axis = np.array([int(i) for i in time_axis])
-        time_axisLabels = np.array(data.index, dtype='datetime64[D]')
+        time_axisLabels = np.array(df.index, dtype='datetime64[D]')
 
         fig = plt.figure()
         ax = fig.add_axes([0, 0, 2.1, 2])
         ax.set_title('Comparison of Actual and Predicted Data')
-        ax.plot(data.iloc[:,1].values, label='Original Dataset')
+        ax.plot(df.iloc[:,1].values, label='Original Dataset')
         ax.plot(list(predvalues[0]), color='red', label='Test Predictions')
         ax.set_xticks(time_axis)
         ax.set_xticklabels(time_axisLabels[time_axis], rotation=45)
