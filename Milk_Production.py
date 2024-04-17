@@ -136,12 +136,9 @@ def app():
 
         # Generate an array of datetime64 objects from January 1976 to December 1976
         months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
-        st.write(months)
-        
+
         # Create a Pandas DataFrame with the datetime and values columns
         nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
-
-        st.write(nextyear)
 
         time_axis = np.linspace(0, df.shape[0]-1, 12)
         time_axis = np.array([int(i) for i in time_axis])
@@ -159,8 +156,7 @@ def app():
         ax.legend(loc='best', prop={'size':20})
         ax.tick_params(size=10, labelsize=15)
 
-
-        ax1 = fig.add_axes([2.3, 1.3, 1, 0.7])
+        ax1 = fig.add_axes([2.3, 0, 0.3, 2])
         ax1.set_title('Projected Milk Production for 1976')
         ax1.plot(nextyear['Milk Production'], color='red', label='predicted next year')
         ax1.set_xticklabels(np.array(nextyear['Month'], dtype='datetime64[D]'), rotation=45)
@@ -168,8 +164,6 @@ def app():
         ax1.set_ylabel('Milk Production', fontsize=20, fontweight='bold')
         ax1.tick_params(size=10, labelsize=15)
         st.pyplot(fig)  
-
-        st.write(nextyear)
 
 if __name__ == '__main__':
     app()   
