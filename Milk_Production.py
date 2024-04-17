@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 if "data_norm" not in st.session_state:
     st.session_state.data_norm = None
 
+if "model" not in st.session_state:
+    st.session_state.model = None
+
 def app():
     st.title('Time Series Analysis')
 
@@ -62,7 +65,7 @@ def app():
     y_test = y_test.to_numpy()
 
     model = tf.keras.Sequential([
-        tf.keras.layers.LSTM(64, input_shape=(1, x_train.shape[2]), return_sequences=True),
+        tf.keras.layers.LSTM(64, input_shape=(1, 1), return_sequences=True),
         tf.keras.layers.Dropout(0.2),
         tf.keras.layers.LSTM(32),
         tf.keras.layers.Dropout(0.1),
@@ -85,6 +88,8 @@ def app():
 
         ax.legend()  # Add legend
         st.pyplot(fig)
+        st.session_state.model = model
+        
 
     if st.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
@@ -100,9 +105,10 @@ def app():
         st.write('Train MAE:', train_mae)
         st.write('Test MAE:', test_mae)
 
+        model = st.session_state.model
         data_norm = st.session_state.data_norm
         # Get predicted data from the model using the normalized values
-        predictions = model.predict(data_norm[0])
+        predictions = model.predict(data_norm)
 
         # Inverse transform the predictions to get the original scale
         predvalues = scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
