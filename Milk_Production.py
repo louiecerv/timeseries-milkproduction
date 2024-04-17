@@ -117,7 +117,7 @@ def app():
         # Use the model to predict the next year of data
         input_seq_len = 12
         num_features=1
-        last_seq = data_norm[-12:] # Use the last year of training data as the starting sequence
+        last_seq = data_norm[-input_seq_len:] # Use the last year of training data as the starting sequence
 
         preds = []
         for i in range(12):
@@ -136,6 +136,9 @@ def app():
 
             # Generate an array of datetime64 objects from January 1976 to December 1976
             months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
+
+            st.write(f"pednext length {len(prednext)}")
+            st.write(f"month length {len(months)}")
 
             # Create a Pandas DataFrame with the datetime and values columns
             nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
