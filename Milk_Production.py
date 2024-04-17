@@ -39,7 +39,11 @@ def app():
     # Normalize the data
     scaler = MinMaxScaler(feature_range=(0, 1))
     data_norm = scaler.fit_transform(df.iloc[:,1].values.reshape(-1, 1))
+
     data_norm = pd.DataFrame(data_norm)
+    st.write("Normalized Data:")
+    st.write(data_norm)
+
     st.session_state.data_norm = data_norm
 
     # Split the data into training and testing sets
@@ -71,9 +75,7 @@ def app():
         # Train the model
         history = model.fit(x_train, y_train, epochs=200, batch_size=64, validation_data=(x_test, y_test))
 
-
         fig, ax = plt.subplots()  # Create a figure and an axes
-
         ax.plot(history.history['loss'], label='Train')  # Plot training loss on ax
         ax.plot(history.history['val_loss'], label='Validation')  # Plot validation loss on ax
 
@@ -84,11 +86,11 @@ def app():
         ax.legend()  # Add legend
         st.pyplot(fig)
 
-
     if st.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
         y_pred_train = model.predict(x_train)
         y_pred_test = model.predict(x_test)
+
         train_rmse = np.sqrt(mean_squared_error(y_train, y_pred_train))
         test_rmse = np.sqrt(mean_squared_error(y_test, y_pred_test))
         train_mae = mean_absolute_error(y_train, y_pred_train)
@@ -100,7 +102,7 @@ def app():
 
         data_norm = st.session_state.data_norm
         # Get predicted data from the model using the normalized values
-        predictions = model.predict(data_norm)
+        predictions = model.predict(data_norm[0])
 
         # Inverse transform the predictions to get the original scale
         predvalues = scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
