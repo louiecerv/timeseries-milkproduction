@@ -71,14 +71,19 @@ def app():
         # Train the model
         history = model.fit(x_train, y_train, epochs=200, batch_size=64, validation_data=(x_test, y_test))
 
-        # Plot the training and validation loss
-        plt.plot(history.history['loss'])
-        plt.plot(history.history['val_loss'])
-        plt.title('Model loss')
-        plt.ylabel('Loss')
-        plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+
+        fig, ax = plt.subplots()  # Create a figure and an axes
+
+        ax.plot(history.history['loss'], label='Train')  # Plot training loss on ax
+        ax.plot(history.history['val_loss'], label='Validation')  # Plot validation loss on ax
+
+        ax.set_title('Model loss')  # Set title on ax
+        ax.set_ylabel('Loss')  # Set y-label on ax
+        ax.set_xlabel('Epoch')  # Set x-label on ax
+
+        ax.legend()  # Add legend
         st.pyplot(fig)
+
 
     if st.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
