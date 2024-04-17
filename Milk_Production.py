@@ -17,26 +17,21 @@ def app():
 
     # Load the data
     df = pd.read_csv('./milk-production.csv', header=0)
-    st.write(df)
-    st.write(df.shape)
+
+    with st.expander("Show Dataset"):
+        st.write(df)
+        st.write(df.shape)
 
     #re-index and use the Month column data convert to numpy datatime datatype
     df.index = np.array(df['Month'], dtype='datetime64')
     time_axis = df.index
 
-    # Create a figure and axes using plt.subplots
+    # Plot the data
     fig, ax = plt.subplots()
-
-    # Use ax.plot to plot the data from your DataFrame
     ax.plot(df['Milk Production']) 
-
-    # (Optional) Customize your plot using ax methods
-    # For example, set labels and title
     ax.set_xlabel("Time")
     ax.set_ylabel("Milk Production (in pounds)")
     ax.set_title("Time Series Plot of Milk Production")
-
-    # Display the plot
     st.pyplot(fig)    
 
     # Normalize the data
@@ -75,6 +70,7 @@ def app():
     model.compile(optimizer='adam', loss='mean_squared_error')
     
     if st.button("Start Training"):
+        
         # Train the model
         history = model.fit(x_train, y_train, epochs=200, batch_size=64, validation_data=(x_test, y_test))
 
