@@ -136,6 +136,7 @@ def app():
 
         # Generate an array of datetime64 objects from January 1976 to December 1976
         months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
+        st.write(months)
         
         # Create a Pandas DataFrame with the datetime and values columns
         nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
