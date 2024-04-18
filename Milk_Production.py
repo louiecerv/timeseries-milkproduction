@@ -91,9 +91,7 @@ def app():
             time.sleep(0.01)
         # Progress bar reaches 100% after the loop completes
         st.success("LSTM Network training completed!") 
-        
 
-    if st.sidebar.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
         y_pred_train = model.predict(x_train)
         y_pred_test = model.predict(x_test)
@@ -116,12 +114,23 @@ def app():
         predvalues = scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
         predvalues = pd.DataFrame(predvalues)
 
+    years = st.sidebar.slider(   
+        label="Set the number years to project:",
+        min_value=2,
+        max_value=6,
+        value=2,
+        step=1
+    )
+
+
+    if st.sidebar.button("Predictions"):
+
+        pred_period = years * 12    
         # Use the model to predict the next year of data
-        input_seq_len = 12
+        input_seq_len = 12 * years
         num_features=1
         last_seq = data_norm[-input_seq_len:] # Use the last year of training data as the starting sequence
 
-        pred_period = 36
         preds = []
         for i in range(pred_period):
             pred = model.predict(last_seq)
@@ -144,6 +153,13 @@ def app():
             end = '1977-12' 
         elif pred_period == 36:
             end = '1978-12'
+        elif pred_period == 48:
+            end = '1979-12'
+        elif pred_period == 60:
+            end = '1980-12'
+        elif pred_period == 72:
+            end = '1981-12'
+
         months = pd.date_range(start='1976-01', end=end, freq='MS')
 
         # Create a Pandas DataFrame with the datetime and values columns
@@ -155,7 +171,9 @@ def app():
 
         fig = plt.figure()
         ax = fig.add_axes([0, 0, 2.1, 2])
-        ax1 = fig.add_axes([2.3, 0, 0.3, 2])
+
+        # make the prediction plot resize based on the years
+        ax1 = fig.add_axes([2.3, 0, 0.15 * years, 2])
 
         ax.set_title('Comparison of Actual and Predicted Data')
         ax.plot(df.iloc[:,1].values, label='Original Dataset')
