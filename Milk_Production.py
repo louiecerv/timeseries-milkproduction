@@ -92,6 +92,16 @@ def app():
         # Progress bar reaches 100% after the loop completes
         st.success("LSTM Network training completed!") 
 
+    years = st.sidebar.slider(   
+        label="Set the number years to project:",
+        min_value=2,
+        max_value=6,
+        value=2,
+        step=1
+    )
+
+
+    if st.sidebar.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
         y_pred_train = model.predict(x_train)
         y_pred_test = model.predict(x_test)
@@ -114,20 +124,9 @@ def app():
         predvalues = scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
         predvalues = pd.DataFrame(predvalues)
 
-    years = st.sidebar.slider(   
-        label="Set the number years to project:",
-        min_value=2,
-        max_value=6,
-        value=2,
-        step=1
-    )
-
-
-    if st.sidebar.button("Predictions"):
-
         pred_period = years * 12    
         # Use the model to predict the next year of data
-        input_seq_len = 12 * years
+        input_seq_len = 12 * years + 12
         num_features=1
         last_seq = data_norm[-input_seq_len:] # Use the last year of training data as the starting sequence
 
