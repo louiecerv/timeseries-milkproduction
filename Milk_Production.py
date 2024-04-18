@@ -121,7 +121,7 @@ def app():
         num_features=1
         last_seq = data_norm[-input_seq_len:] # Use the last year of training data as the starting sequence
 
-        pred_period = 24
+        pred_period = 36
         preds = []
         for i in range(pred_period):
             pred = model.predict(last_seq)
@@ -155,7 +155,7 @@ def app():
 
         fig = plt.figure()
         ax = fig.add_axes([0, 0, 2.1, 2])
-        ax1 = fig.add_axes([2.3, 0, 0.2, 2])
+        ax1 = fig.add_axes([2.3, 0, 0.3, 2])
 
         ax.set_title('Comparison of Actual and Predicted Data')
         ax.plot(df.iloc[:,1].values, label='Original Dataset')
