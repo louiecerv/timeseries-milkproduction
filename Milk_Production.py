@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+import time
 
 if "data_norm" not in st.session_state:
     st.session_state.data_norm = None
@@ -37,11 +38,7 @@ def app():
     # Normalize the data
     scaler = MinMaxScaler(feature_range=(0, 1))
     data_norm = scaler.fit_transform(df.iloc[:,1].values.reshape(-1, 1))
-
     data_norm = pd.DataFrame(data_norm)
-    st.write("Normalized Data:")
-    st.write(data_norm)
-
     st.session_state.data_norm = data_norm
 
     # Split the data into training and testing sets
@@ -69,8 +66,8 @@ def app():
 
     model.compile(optimizer='adam', loss='mean_squared_error')
     
-    if st.button("Start Training"):
-        
+    if st.sidebar.button("Start Training"):
+        progress_bar = st.progress(0, text="Training the LSTM network, please wait...")           
         # Train the model
         history = model.fit(x_train, y_train, epochs=200, batch_size=64, validation_data=(x_test, y_test))
 
@@ -85,9 +82,18 @@ def app():
         ax.legend()  # Add legend
         st.pyplot(fig)
         st.session_state.model = model
+
+        # update the progress bar
+        for i in range(100):
+            # Update progress bar value
+            progress_bar.progress(i + 1)
+            # Simulate some time-consuming task (e.g., sleep)
+            time.sleep(0.01)
+        # Progress bar reaches 100% after the loop completes
+        st.success("LSTM Network training completed!") 
         
 
-    if st.button("Predictions"):
+    if st.sidebar.button("Predictions"):
         # Get the predicted values and compute the accuracy metrics
         y_pred_train = model.predict(x_train)
         y_pred_test = model.predict(x_test)
@@ -115,8 +121,9 @@ def app():
         num_features=1
         last_seq = data_norm[-input_seq_len:] # Use the last year of training data as the starting sequence
 
+        pred_period = 12
         preds = []
-        for i in range(12):
+        for i in range(pred_period):
             pred = model.predict(last_seq)
             preds.append(pred[0])
 
@@ -131,34 +138,50 @@ def app():
         prednext = [item for sublist in prednext for item in sublist]
 
         # Generate an array of datetime64 objects from January 1976 to December 1976
-        months = pd.date_range(start='1976-01', end='1976-12', freq='MS')
+        if pred_period == 12:
+            end = '1976-12'
+        elif pred_period == 24:
+            end = '1977-12' 
+        elif pred_period == 36:
+            end = '1978-12'
+        months = pd.date_range(start='1976-01', end=end, freq='MS')
 
         # Create a Pandas DataFrame with the datetime and values columns
         nextyear = pd.DataFrame({'Month': months, 'Milk Production': prednext})
 
-        time_axis = np.linspace(0, df.shape[0]-1, 12)
+        time_axis = np.linspace(0, df.shape[0]-1, pred_period)
         time_axis = np.array([int(i) for i in time_axis])
         time_axisLabels = np.array(df.index, dtype='datetime64[D]')
 
         fig = plt.figure()
         ax = fig.add_axes([0, 0, 2.1, 2])
+        ax1 = fig.add_axes([2.3, 0, 0.2, 2])
+
         ax.set_title('Comparison of Actual and Predicted Data')
         ax.plot(df.iloc[:,1].values, label='Original Dataset')
         ax.plot(list(predvalues[0]), color='red', label='Test Predictions')
+
+        # Get the maximum y-value among both datasets
+        max_y_value = max(df.iloc[:,1].values.max(), nextyear['Milk Production'].max())+100
+        # Set the same y-limits for both axes
+        ax.set_ylim(0, max_y_value)
+        ax1.set_ylim(0, max_y_value)
+
         ax.set_xticks(time_axis)
-        ax.set_xticklabels(time_axisLabels[time_axis], rotation=45)
         ax.set_xlabel('\nTime', fontsize=20, fontweight='bold')
         ax.set_ylabel('Mik Production', fontsize=20, fontweight='bold')
+        ax.set_xticklabels(time_axisLabels[time_axis], rotation=45)        
         ax.legend(loc='best', prop={'size':20})
         ax.tick_params(size=10, labelsize=15)
 
-        ax1 = fig.add_axes([2.3, 0, 0.3, 2])
+
         ax1.set_title('Projected Milk Production for 1976')
         ax1.plot(nextyear['Milk Production'], color='red', label='predicted next year')
-        ax1.set_xticklabels(np.array(nextyear['Month'], dtype='datetime64[D]'), rotation=45)
         ax1.set_xlabel('Month', fontsize=20, fontweight='bold')
         ax1.set_ylabel('Milk Production', fontsize=20, fontweight='bold')
+        ax1.set_xticklabels(np.array(nextyear['Month'], dtype='datetime64[D]'), rotation=45)        
         ax1.tick_params(size=10, labelsize=15)
+
         st.pyplot(fig)  
 
 if __name__ == '__main__':
