@@ -121,7 +121,7 @@ def app():
         num_features=1
         last_seq = data_norm[-input_seq_len:] # Use the last year of training data as the starting sequence
 
-        pred_period = 12
+        pred_period = 24
         preds = []
         for i in range(pred_period):
             pred = model.predict(last_seq)
@@ -168,14 +168,13 @@ def app():
         ax1.set_ylim(0, max_y_value)
 
         ax.set_xticks(time_axis)
-        ax.set_xlabel('\nTime', fontsize=20, fontweight='bold')
+        ax.set_xlabel('\nMonth', fontsize=20, fontweight='bold')
         ax.set_ylabel('Mik Production', fontsize=20, fontweight='bold')
         ax.set_xticklabels(time_axisLabels[time_axis], rotation=45)        
         ax.legend(loc='best', prop={'size':20})
         ax.tick_params(size=10, labelsize=15)
 
-
-        ax1.set_title('Projected Milk Production for 1976')
+        ax1.set_title('Projected Milk Production')
         ax1.plot(nextyear['Milk Production'], color='red', label='predicted next year')
         ax1.set_xlabel('Month', fontsize=20, fontweight='bold')
         ax1.set_ylabel('Milk Production', fontsize=20, fontweight='bold')
